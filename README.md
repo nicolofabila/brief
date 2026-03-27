@@ -6,7 +6,7 @@ Brief is a mobile-first web app that turns PubMed into a personalized, newspaper
 
 - [Next.js](https://nextjs.org/) 14 (App Router), React, TypeScript, Tailwind CSS
 - PubMed [E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for search and article data
-- Optional [PostgreSQL](https://www.postgresql.org/) via [Prisma](https://www.prisma.io/) for saved articles tied to an anonymous browser session (local storage is always used as well)
+- Optional [PostgreSQL](https://www.postgresql.org/) via [Prisma](https://www.prisma.io/) for kept papers tied to an anonymous browser session (local storage is always used as well)
 
 ## Requirements
 
@@ -24,7 +24,7 @@ Copy [`.env.example`](./.env.example) to `.env` locally. For deployment, set the
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | No | PostgreSQL connection string. If unset, the feed works; saved-article API routes return an error and the UI relies on local storage only. |
+| `DATABASE_URL` | No | PostgreSQL connection string. If unset, the feed works; the kept list falls back to local storage only (the `/api/saved` routes return an error). |
 | `NCBI_API_KEY` | No | NCBI API key for higher E-utilities rate limits ([request a key](https://www.ncbi.nlm.nih.gov/account/settings/)). |
 | `NEXT_PUBLIC_BASE_PATH` | No | URL path prefix when the app is not served at the domain root. Use a leading slash and no trailing slash, e.g. `/my-app`. Leave unset for deployment at `/`. |
 

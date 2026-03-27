@@ -7,14 +7,15 @@ export const dynamic = "force-dynamic";
 
 type FeedInput = {
   keywords: string[];
-  days: 7 | 30;
+  days: 7 | 30 | 90;
   trialsOnly: boolean;
   reviewsOnly: boolean;
 };
 
-function parseDays(v: unknown): 7 | 30 {
+function parseDays(v: unknown): 7 | 30 | 90 {
   const n = Number(v);
   if (n === 7) return 7;
+  if (n === 90) return 90;
   return briefConfig.defaultFeedDays;
 }
 

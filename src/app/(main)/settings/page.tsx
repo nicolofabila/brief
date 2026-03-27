@@ -31,7 +31,7 @@ export default function SettingsPage() {
       <AppHeader variant="brand" title="Settings" />
       <main className="mx-auto max-w-lg space-y-8 px-4 py-8">
         <p className="text-sm text-secondary">
-          Keywords are stored in this browser only. With a database configured on the server, saved bookmarks also sync for this device&apos;s session.
+          Keywords are stored in this browser only. With a database configured on the server, kept papers also sync for this device&apos;s session.
         </p>
 
         <div>

@@ -4,12 +4,11 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH?.trim() || "";
 const nextConfig = {
   ...(basePath ? { basePath } : {}),
   /**
-   * macOS often hits EMFILE (too many open files) with native FS watchers; Watchpack then fails
-   * and `next dev` can serve 404 for every route while only compiling `/_not-found`. Polling avoids
-   * that at the cost of slightly higher CPU in dev. Set NEXT_DEV_NATIVE_WATCH=1 to disable.
+   * Fast default: native FS watchers. If you hit EMFILE on macOS, run `npm run dev:poll` instead
+   * (polling is slower but avoids “too many open files”).
    */
   webpack: (config, { dev }) => {
-    if (dev && process.env.NEXT_DEV_NATIVE_WATCH !== "1") {
+    if (dev && process.env.NEXT_DEV_POLLING === "1") {
       config.watchOptions = {
         poll: 1000,
         aggregateTimeout: 300,

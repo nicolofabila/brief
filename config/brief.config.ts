@@ -25,8 +25,8 @@ export const briefConfig = {
     esummaryBatchSize: 200,
   },
 
-  /** Default window when the client does not specify days (7 | 30). */
-  defaultFeedDays: 30 as 7 | 30,
+  /** Default window when the client does not specify days (7 | 30 | 90). */
+  defaultFeedDays: 30 as 7 | 30 | 90,
 
   /** How many ranked items to return from /api/feed. */
   feedLimit: 40,
