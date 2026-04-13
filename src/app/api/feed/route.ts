@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { briefConfig } from "../../../../config/brief.config";
 import { buildFeedSearchTerm, efetchPubmed, esearchPubmed, formatEntrezDate } from "@/lib/pubmed";
-import { articleMatchesAnyKeyword, scoreArticles } from "@/lib/scoring";
+import { articleMatchesAllKeywords, scoreArticles } from "@/lib/scoring";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,7 @@ async function runFeed(input: FeedInput): Promise<NextResponse> {
 
     const parsed = await efetchPubmed(pmids.slice(0, briefConfig.pubmed.esearchRetmax));
     let scored = scoreArticles(parsed, keywords);
-    scored = scored.filter((a) => articleMatchesAnyKeyword(a.title, a.abstract, keywords));
+    scored = scored.filter((a) => articleMatchesAllKeywords(a.title, a.abstract, keywords));
     scored = scored.slice(0, briefConfig.feedLimit);
 
     return NextResponse.json({

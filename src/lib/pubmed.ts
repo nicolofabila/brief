@@ -16,6 +16,7 @@ export type ParsedArticle = {
   authorsLine: string | null;
   doi: string | null;
   pubYear: number | null;
+  publicationTypes: string[];
 };
 
 function apiKeyParam(): string {
@@ -238,6 +239,16 @@ function extractDoi(mc: Record<string, unknown>, article: Record<string, unknown
   return null;
 }
 
+function extractPublicationTypes(article: Record<string, unknown> | undefined): string[] {
+  const listNode = article?.PublicationTypeList as { PublicationType?: unknown } | undefined;
+  const raw = normalizeList(listNode?.PublicationType);
+  const out = raw
+    .map((item) => sanitizePubMedDisplayText(xmlText(item)))
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return Array.from(new Set(out));
+}
+
 export function parseEfetchXml(xml: string): ParsedArticle[] {
   const doc = parser.parse(xml) as Record<string, unknown>;
   const root = doc.PubmedArticleSet as Record<string, unknown> | undefined;
@@ -280,6 +291,7 @@ export function parseEfetchXml(xml: string): ParsedArticle[] {
       authorsLine: authorsLine ? sanitizePubMedDisplayText(authorsLine) : null,
       doi: extractDoi(medline, article),
       pubYear,
+      publicationTypes: extractPublicationTypes(article),
     });
   }
 
@@ -403,7 +415,7 @@ export function buildFeedSearchTerm(input: {
   }
 
   if (keywordClauses.length > 0) {
-    parts.push(`(${keywordClauses.join(" OR ")})`);
+    parts.push(`(${keywordClauses.join(" AND ")})`);
   } else {
     parts.push("(biomedical research)");
   }

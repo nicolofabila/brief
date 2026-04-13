@@ -33,7 +33,6 @@ export function FeedSwipeStack({
   renderCard,
 }: Props) {
   const current = queue[0] ?? null;
-  const next = queue[1] ?? null;
   const paperRef = useRef<FeedPaper | null>(null);
   paperRef.current = current;
 
@@ -161,9 +160,15 @@ export function FeedSwipeStack({
     },
   );
 
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (!current) return;
+  useEffect(() => {
+    const onWindowKeyDown = (e: KeyboardEvent) => {
+      if (!paperRef.current) return;
+      if (e.repeat) return;
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        const tag = target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
+      }
       if (e.key === "ArrowRight") {
         e.preventDefault();
         flyOut("right");
@@ -171,9 +176,10 @@ export function FeedSwipeStack({
         e.preventDefault();
         flyOut("left");
       }
-    },
-    [current, flyOut],
-  );
+    };
+    window.addEventListener("keydown", onWindowKeyDown);
+    return () => window.removeEventListener("keydown", onWindowKeyDown);
+  }, [flyOut]);
 
   if (!current) return null;
 
@@ -182,51 +188,33 @@ export function FeedSwipeStack({
       className="relative mx-auto w-full max-w-3xl outline-none"
       role="region"
       aria-label="Paper swipe feed"
-      tabIndex={0}
-      onKeyDown={onKeyDown}
     >
       <div className="mb-4 flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
         <p className="font-label text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           {processed} / {totalForProgress}
         </p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => flyOut("left")}
-            className="rounded-full border border-outline-variant/40 bg-surface-container px-4 py-2 font-label text-xs font-bold uppercase tracking-wider text-on-surface transition-colors hover:bg-surface-variant active:scale-95"
-            aria-label="Discard — swipe left"
-          >
-            Discard
-          </button>
-          <button
-            type="button"
-            onClick={() => flyOut("right")}
-            className="rounded-full bg-primary px-4 py-2 font-label text-xs font-bold uppercase tracking-wider text-on-primary transition-colors hover:opacity-90 active:scale-95"
-            aria-label="Keep — swipe right"
-          >
-            Keep
-          </button>
-        </div>
+      </div>
+
+      <div className="hidden md:block">
+        <button
+          type="button"
+          onClick={() => flyOut("left")}
+          className="fixed left-[max(1rem,calc(50%-27rem))] top-1/2 z-30 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border border-outline-variant/40 bg-surface-container font-label text-[10px] font-bold uppercase tracking-wider text-on-surface shadow-md transition-colors hover:bg-surface-variant active:scale-95"
+          aria-label="Pass — swipe left"
+        >
+          Pass
+        </button>
+        <button
+          type="button"
+          onClick={() => flyOut("right")}
+          className="fixed right-[max(1rem,calc(50%-27rem))] top-1/2 z-30 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-primary font-label text-[10px] font-bold uppercase tracking-wider text-on-primary shadow-md transition-colors hover:opacity-90 active:scale-95"
+          aria-label="Keep — swipe right"
+        >
+          Keep
+        </button>
       </div>
 
       <div className="relative min-h-[min(40dvh,320px)] touch-pan-y pt-4">
-        {next ? (
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 z-0 flex justify-center px-0"
-            aria-hidden
-          >
-            <div
-              className="w-full max-w-3xl origin-top rounded-lg opacity-[0.82]"
-              style={{
-                transformOrigin: "50% 0%",
-                transform: `scale(${STACK_BACK.scale}) translateY(${STACK_BACK.stackY}px)`,
-              }}
-            >
-              {renderCard(next)}
-            </div>
-          </div>
-        ) : null}
-
         <animated.div
           style={{
             transform: stackTransform,
@@ -246,6 +234,24 @@ export function FeedSwipeStack({
             {renderCard(current)}
           </animated.div>
         </animated.div>
+      </div>
+      <div className="mt-4 flex items-center justify-between px-1">
+        <button
+          type="button"
+          onClick={() => flyOut("left")}
+          className="rounded-full border border-outline-variant/40 bg-surface-container px-4 py-2 font-label text-xs font-bold uppercase tracking-wider text-on-surface transition-colors hover:bg-surface-variant active:scale-95 md:hidden"
+          aria-label="Pass — swipe left"
+        >
+          Pass
+        </button>
+        <button
+          type="button"
+          onClick={() => flyOut("right")}
+          className="rounded-full bg-primary px-4 py-2 font-label text-xs font-bold uppercase tracking-wider text-on-primary transition-colors hover:opacity-90 active:scale-95 md:hidden"
+          aria-label="Keep — swipe right"
+        >
+          Keep
+        </button>
       </div>
     </div>
   );

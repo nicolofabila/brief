@@ -7,6 +7,7 @@ export type FeedPaper = {
   authorsLine: string | null;
   doi: string | null;
   pubYear: number | null;
+  publicationTypes: string[];
   relevanceRaw: number;
   /** Keyword match strength in title/abstract, normalized to 0–1. */
   relevanceNorm: number;

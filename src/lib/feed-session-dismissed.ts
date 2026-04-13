@@ -25,3 +25,8 @@ export function removeSessionDismissedPmid(pmid: string) {
   s.delete(pmid);
   localStorage.setItem(KEY, JSON.stringify([...s]));
 }
+
+export function clearSessionDismissedPmids() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(KEY);
+}

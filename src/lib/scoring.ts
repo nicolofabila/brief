@@ -10,6 +10,7 @@ export type ScoredArticle = {
   authorsLine: string | null;
   doi: string | null;
   pubYear: number | null;
+  publicationTypes: string[];
   relevanceRaw: number;
   relevanceNorm: number;
   journal_tier: number;
@@ -25,10 +26,10 @@ function clamp01(n: number): number {
   return Math.min(1, Math.max(0, n));
 }
 
-export function articleMatchesAnyKeyword(title: string, abstract: string, keywords: string[]): boolean {
+export function articleMatchesAllKeywords(title: string, abstract: string, keywords: string[]): boolean {
   if (keywords.length === 0) return true;
   const h = `${title} ${abstract}`;
-  return keywords.some((kw) => countPhraseHits(h, kw) > 0);
+  return keywords.every((kw) => countPhraseHits(h, kw) > 0);
 }
 
 function countPhraseHits(haystack: string, phrase: string): number {

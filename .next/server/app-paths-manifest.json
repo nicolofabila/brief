@@ -1,6 +1,5 @@
 {
-  "/api/saved/route": "app/api/saved/route.js",
-  "/api/feed/route": "app/api/feed/route.js",
-  "/(main)/feed/page": "app/(main)/feed/page.js",
-  "/(main)/kept/page": "app/(main)/kept/page.js"
+  "/(main)/settings/page": "app/(main)/settings/page.js",
+  "/(main)/kept/page": "app/(main)/kept/page.js",
+  "/(main)/feed/page": "app/(main)/feed/page.js"
 }

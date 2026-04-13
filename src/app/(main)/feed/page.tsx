@@ -130,6 +130,7 @@ export default function FeedPage() {
         abstract: paper.abstract,
         journal: paper.journal,
         pubDate: paper.pubDate,
+        publicationTypes: paper.publicationTypes,
       };
       addLocalSaved(payload);
       setKeptPmids((prev) => new Set(prev).add(paper.pmid));
@@ -152,9 +153,11 @@ export default function FeedPage() {
   );
 
   const onKeep = useCallback(
-    async (paper: FeedPaper) => {
+    (paper: FeedPaper) => {
       const wasKeptBefore = keptPmids.has(paper.pmid);
-      if (!wasKeptBefore) await keepPaperIfNeeded(paper);
+      if (!wasKeptBefore) {
+        void keepPaperIfNeeded(paper);
+      }
       setLastAction({ kind: "keep", paper, wasKeptBefore });
       setQueue((q) => {
         if (q[0]?.pmid !== paper.pmid) return q;

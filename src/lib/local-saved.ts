@@ -4,7 +4,7 @@ const KEY = "brief_saved_local_v1";
 
 export type LocalSaved = Pick<
   FeedPaper,
-  "pmid" | "title" | "abstract" | "journal" | "pubDate"
+  "pmid" | "title" | "abstract" | "journal" | "pubDate" | "publicationTypes"
 >;
 
 function readAll(): LocalSaved[] {
@@ -53,4 +53,21 @@ export function toggleLocalSaved(paper: LocalSaved): boolean {
 
 export function removeLocalSaved(pmid: string) {
   writeAll(readAll().filter((x) => x.pmid !== pmid));
+}
+
+export function clearLocalSaved() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(KEY);
+}
+
+export function mergeLocalSavedPublicationTypes(pmid: string, publicationTypes: string[]) {
+  if (!Array.isArray(publicationTypes) || publicationTypes.length === 0) return;
+  const all = readAll();
+  const i = all.findIndex((x) => x.pmid === pmid);
+  if (i < 0) return;
+  all[i] = {
+    ...all[i],
+    publicationTypes: Array.from(new Set([...(all[i].publicationTypes ?? []), ...publicationTypes])),
+  };
+  writeAll(all);
 }

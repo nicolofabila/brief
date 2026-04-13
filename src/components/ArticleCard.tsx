@@ -12,8 +12,40 @@ type Props = {
   layout?: "default" | "feed";
 };
 
+const TAG_ORDER = [
+  "Review",
+  "Systematic Review",
+  "Meta-Analysis",
+  "Randomized Controlled Trial",
+  "Clinical Trial",
+  "Case Reports",
+  "Practice Guideline",
+  "Editorial",
+] as const;
+
+function normalizedPublicationTags(publicationTypes: string[]): string[] {
+  const lower = publicationTypes.map((t) => t.toLowerCase());
+  const hasContains = (...needles: string[]) =>
+    needles.some((needle) => lower.some((t) => t.includes(needle)));
+  const tags: string[] = [];
+
+  if (hasContains("review")) tags.push("Review");
+  if (hasContains("systematic review")) tags.push("Systematic Review");
+  if (hasContains("meta-analysis", "meta analysis")) tags.push("Meta-Analysis");
+  if (hasContains("randomized controlled trial", "randomised controlled trial")) {
+    tags.push("Randomized Controlled Trial");
+  }
+  if (hasContains("clinical trial")) tags.push("Clinical Trial");
+  if (hasContains("case report")) tags.push("Case Reports");
+  if (hasContains("practice guideline")) tags.push("Practice Guideline");
+  if (hasContains("editorial")) tags.push("Editorial");
+
+  return TAG_ORDER.filter((label) => tags.includes(label));
+}
+
 export function ArticleCard({ paper, layout = "default" }: Props) {
   const pubLabel = paper.pubDate ?? (paper.pubYear ? String(paper.pubYear) : "—");
+  const articleTypeTags = normalizedPublicationTags(paper.publicationTypes);
   const noAbstract = "No abstract available in PubMed for this record.";
   const abstractDisplay =
     layout === "feed"
@@ -137,6 +169,14 @@ export function ArticleCard({ paper, layout = "default" }: Props) {
               New
             </span>
           ) : null}
+          {articleTypeTags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-surface-variant px-3 py-1 text-[10px] font-semibold text-on-surface-variant"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
         <div className="flex gap-1">
           <a
